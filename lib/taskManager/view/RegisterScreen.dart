@@ -2,8 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:uuid/uuid.dart';
 import '../db/UserDatabase.dart';
 import '../model/UserModel.dart';
-import 'package:taskmanager/main.dart'; // Import main.dart để sử dụng ThemeSwitchingWidget
-
+import 'package:taskmanager/main.dart';
+import 'dart:developer' as developer; // Thêm để ghi log
 
 class RegisterScreen extends StatefulWidget {
   const RegisterScreen({super.key});
@@ -18,8 +18,29 @@ class _RegisterScreenState extends State<RegisterScreen> {
   final _passwordController = TextEditingController();
   final _emailController = TextEditingController();
 
+  // Hàm kiểm tra định dạng email
+  String? _validateEmail(String? value) {
+    developer.log('Validating email: $value', name: 'RegisterScreen');
+    if (value == null || value.isEmpty) {
+      developer.log('Email validation failed: Email is empty', name: 'RegisterScreen');
+      return 'Vui lòng nhập email';
+    }
+    // Biểu thức chính quy chặt chẽ để kiểm tra email
+    final emailRegex = RegExp(
+      r'^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$',
+    );
+    if (!emailRegex.hasMatch(value)) {
+      developer.log('Email validation failed: Invalid format for $value', name: 'RegisterScreen');
+      return 'Vui lòng nhập email hợp lệ (ví dụ: user@domain.com)';
+    }
+    developer.log('Email validation passed for $value', name: 'RegisterScreen');
+    return null;
+  }
+
   Future<void> _register() async {
+    developer.log('Attempting to register', name: 'RegisterScreen');
     if (_formKey.currentState!.validate()) {
+      developer.log('Form validation passed', name: 'RegisterScreen');
       try {
         final users = await UserDatabase.instance.getAllUsers();
         if (users.any((user) => user.username == _usernameController.text)) {
@@ -28,6 +49,18 @@ class _RegisterScreenState extends State<RegisterScreen> {
               const SnackBar(content: Text('Tên đăng nhập đã tồn tại')),
             );
           }
+          developer.log('Registration failed: Username already exists', name: 'RegisterScreen');
+          return;
+        }
+
+        // Kiểm tra email đã tồn tại chưa
+        if (users.any((user) => user.email == _emailController.text)) {
+          if (mounted) {
+            ScaffoldMessenger.of(context).showSnackBar(
+              const SnackBar(content: Text('Email đã được sử dụng')),
+            );
+          }
+          developer.log('Registration failed: Email already used', name: 'RegisterScreen');
           return;
         }
 
@@ -45,6 +78,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
           ScaffoldMessenger.of(context).showSnackBar(
             const SnackBar(content: Text('Đăng ký thành công! Vui lòng đăng nhập')),
           );
+          developer.log('Registration successful for user: ${user.username}', name: 'RegisterScreen');
           Navigator.pop(context);
         }
       } catch (e) {
@@ -52,8 +86,11 @@ class _RegisterScreenState extends State<RegisterScreen> {
           ScaffoldMessenger.of(context).showSnackBar(
             SnackBar(content: Text('Đã có lỗi xảy ra: $e')),
           );
+          developer.log('Registration error: $e', name: 'RegisterScreen');
         }
       }
+    } else {
+      developer.log('Form validation failed', name: 'RegisterScreen');
     }
   }
 
@@ -67,7 +104,6 @@ class _RegisterScreenState extends State<RegisterScreen> {
 
   @override
   Widget build(BuildContext context) {
-    // Lấy ThemeSwitchingWidget để truy cập isDarkMode và toggleTheme
     final themeSwitching = ThemeSwitchingWidget.of(context);
 
     return Scaffold(
@@ -106,6 +142,9 @@ class _RegisterScreenState extends State<RegisterScreen> {
                   if (value == null || value.isEmpty) {
                     return 'Vui lòng nhập mật khẩu';
                   }
+                  if (value.length < 6) {
+                    return 'Mật khẩu phải có ít nhất 6 ký tự';
+                  }
                   return null;
                 },
               ),
@@ -114,15 +153,8 @@ class _RegisterScreenState extends State<RegisterScreen> {
                 controller: _emailController,
                 decoration: const InputDecoration(labelText: 'Email'),
                 keyboardType: TextInputType.emailAddress,
-                validator: (value) {
-                  if (value == null || value.isEmpty) {
-                    return 'Vui lòng nhập email';
-                  }
-                  if (!RegExp(r'^[^@]+@[^@]+\.[^@]+').hasMatch(value)) {
-                    return 'Email không hợp lệ';
-                  }
-                  return null;
-                },
+                validator: _validateEmail,
+                autovalidateMode: AutovalidateMode.onUserInteraction, // Xác thực ngay khi người dùng nhập
               ),
               const SizedBox(height: 16),
               ElevatedButton(
