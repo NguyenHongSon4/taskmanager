@@ -28,24 +28,47 @@ class TaskItem extends StatelessWidget {
     }
   }
 
+  // Hàm hiển thị trạng thái bằng tiếng Việt
+  String _getStatusDisplay(TaskStatus status) {
+    switch (status) {
+      case TaskStatus.chuaLam:
+        return 'Chưa làm';
+      case TaskStatus.dangLam:
+        return 'Đang làm';
+      case TaskStatus.hoanThanh:
+        return 'Hoàn thành';
+      case TaskStatus.daHuy:
+        return 'Đã hủy';
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return Card(
       margin: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+      elevation: 2,
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(12),
+      ),
       child: ListTile(
         onTap: onTap,
         leading: Icon(
           Icons.circle,
           color: _getPriorityColor(),
+          size: 20,
         ),
         title: Text(
           task.title,
           style: TextStyle(
+            fontSize: 16,
+            fontWeight: FontWeight.w500,
             decoration: task.completed ? TextDecoration.lineThrough : null,
+            color: task.completed ? Colors.grey : Colors.black87,
           ),
         ),
         subtitle: Text(
-          'Trạng thái: ${task.status.toString().split('.').last}',
+          'Trạng thái: ${_getStatusDisplay(task.status)}',
+          style: const TextStyle(color: Colors.black54),
         ),
         trailing: Row(
           mainAxisSize: MainAxisSize.min,
@@ -53,11 +76,12 @@ class TaskItem extends StatelessWidget {
             IconButton(
               icon: Icon(
                 task.completed ? Icons.check_box : Icons.check_box_outline_blank,
+                color: task.completed ? Colors.green : Colors.grey,
               ),
               onPressed: onToggleComplete,
             ),
             IconButton(
-              icon: const Icon(Icons.delete),
+              icon: const Icon(Icons.delete, color: Colors.red),
               onPressed: onDelete,
             ),
           ],

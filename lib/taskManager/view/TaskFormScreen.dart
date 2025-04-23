@@ -23,7 +23,7 @@ class _TaskFormScreenState extends State<TaskFormScreen> {
   late TextEditingController _titleController;
   late TextEditingController _descriptionController;
   late TextEditingController _categoryController;
-  TaskStatus _status = TaskStatus.toDo;
+  TaskStatus _status = TaskStatus.chuaLam; // Mặc định là "Chưa làm"
   String _priority = 'Trung bình';
   DateTime? _dueDate;
   List<String> _attachments = [];
@@ -56,13 +56,27 @@ class _TaskFormScreenState extends State<TaskFormScreen> {
     }
   }
 
+  // Hàm hiển thị trạng thái bằng tiếng Việt
+  String _getStatusDisplay(TaskStatus status) {
+    switch (status) {
+      case TaskStatus.chuaLam:
+        return 'Chưa làm';
+      case TaskStatus.dangLam:
+        return 'Đang làm';
+      case TaskStatus.hoanThanh:
+        return 'Hoàn thành';
+      case TaskStatus.daHuy:
+        return 'Đã hủy';
+    }
+  }
+
   @override
   void initState() {
     super.initState();
     _titleController = TextEditingController(text: widget.task?.title ?? '');
     _descriptionController = TextEditingController(text: widget.task?.description ?? '');
     _categoryController = TextEditingController(text: widget.task?.category ?? '');
-    _status = widget.task?.status ?? TaskStatus.toDo;
+    _status = widget.task?.status ?? TaskStatus.chuaLam;
     _priority = widget.task != null ? _priorityToString(widget.task!.priority) : 'Trung bình';
     _dueDate = widget.task?.dueDate;
     _attachments = widget.task?.attachments ?? [];
@@ -83,7 +97,6 @@ class _TaskFormScreenState extends State<TaskFormScreen> {
     }
   }
 
-  // Chụp ảnh từ camera
   Future<void> _pickImageFromCamera() async {
     final picker = ImagePicker();
     final pickedFile = await picker.pickImage(source: ImageSource.camera);
@@ -95,7 +108,6 @@ class _TaskFormScreenState extends State<TaskFormScreen> {
     }
   }
 
-  // Chọn ảnh từ thư viện
   Future<void> _pickImageFromGallery() async {
     final picker = ImagePicker();
     final pickedFile = await picker.pickImage(source: ImageSource.gallery);
@@ -107,12 +119,11 @@ class _TaskFormScreenState extends State<TaskFormScreen> {
     }
   }
 
-  // Chọn tệp tài liệu (Word, PDF)
   Future<void> _pickDocument() async {
     FilePickerResult? result = await FilePicker.platform.pickFiles(
       type: FileType.custom,
       allowedExtensions: ['doc', 'docx', 'pdf'],
-      allowMultiple: true, // Cho phép chọn nhiều tệp
+      allowMultiple: true,
     );
 
     if (result != null) {
@@ -216,7 +227,7 @@ class _TaskFormScreenState extends State<TaskFormScreen> {
                   items: TaskStatus.values
                       .map((status) => DropdownMenuItem(
                     value: status,
-                    child: Text(status.toString().split('.').last),
+                    child: Text(_getStatusDisplay(status)),
                   ))
                       .toList(),
                   onChanged: (value) {
@@ -293,7 +304,7 @@ class _TaskFormScreenState extends State<TaskFormScreen> {
                         ),
                       ],
                       child: ElevatedButton(
-                        onPressed: null, // PopupMenuButton sẽ xử lý sự kiện
+                        onPressed: null,
                         child: const Text('Thêm tệp'),
                       ),
                     ),

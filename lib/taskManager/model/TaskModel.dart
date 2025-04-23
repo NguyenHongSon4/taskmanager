@@ -1,4 +1,4 @@
-enum TaskStatus { toDo, inProgress, done, cancelled }
+enum TaskStatus { chuaLam, dangLam, hoanThanh, daHuy }
 
 class Task {
   final String id;
@@ -56,7 +56,7 @@ class Task {
       description: map['description'],
       status: TaskStatus.values.firstWhere(
             (e) => e.toString().split('.').last == map['status'],
-        orElse: () => TaskStatus.toDo,
+        orElse: () => TaskStatus.chuaLam, // Mặc định là "Chưa làm"
       ),
       priority: map['priority'],
       dueDate: map['dueDate'] != null ? DateTime.parse(map['dueDate']) : null,

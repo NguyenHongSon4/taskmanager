@@ -96,6 +96,20 @@ class _TaskListScreenState extends State<TaskListScreen> {
     }
   }
 
+  // Hàm hiển thị trạng thái bằng tiếng Việt
+  String _getStatusDisplay(TaskStatus status) {
+    switch (status) {
+      case TaskStatus.chuaLam:
+        return 'Chưa làm';
+      case TaskStatus.dangLam:
+        return 'Đang làm';
+      case TaskStatus.hoanThanh:
+        return 'Hoàn thành';
+      case TaskStatus.daHuy:
+        return 'Đã hủy';
+    }
+  }
+
   @override
   void dispose() {
     _searchController.dispose();
@@ -153,7 +167,7 @@ class _TaskListScreenState extends State<TaskListScreen> {
                       ),
                       ...TaskStatus.values.map((status) => DropdownMenuItem(
                         value: status.toString().split('.').last,
-                        child: Text(status.toString().split('.').last),
+                        child: Text(_getStatusDisplay(status)),
                       )),
                     ],
                     onChanged: (value) {

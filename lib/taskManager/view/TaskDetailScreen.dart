@@ -23,7 +23,6 @@ class _TaskDetailScreenState extends State<TaskDetailScreen> {
   void initState() {
     super.initState();
     _task = widget.task;
-    // In ra giá trị của _task.attachments để kiểm tra
     print('Attachments: ${_task.attachments}');
   }
 
@@ -53,7 +52,7 @@ class _TaskDetailScreenState extends State<TaskDetailScreen> {
   bool _isImageFile(String path) {
     final imageExtensions = ['.jpg', '.jpeg', '.png', '.gif', '.bmp'];
     final isImage = imageExtensions.any((ext) => path.toLowerCase().endsWith(ext));
-    print('Checking path: $path, isImage: $isImage'); // In ra để kiểm tra
+    print('Checking path: $path, isImage: $isImage');
     return isImage;
   }
 
@@ -81,6 +80,20 @@ class _TaskDetailScreenState extends State<TaskDetailScreen> {
           Navigator.pop(context, true);
         }
       }
+    }
+  }
+
+  // Hàm hiển thị trạng thái bằng tiếng Việt
+  String _getStatusDisplay(TaskStatus status) {
+    switch (status) {
+      case TaskStatus.chuaLam:
+        return 'Chưa làm';
+      case TaskStatus.dangLam:
+        return 'Đang làm';
+      case TaskStatus.hoanThanh:
+        return 'Hoàn thành';
+      case TaskStatus.daHuy:
+        return 'Đã hủy';
     }
   }
 
@@ -115,7 +128,7 @@ class _TaskDetailScreenState extends State<TaskDetailScreen> {
               const SizedBox(height: 16),
               Text('Mô tả: ${_task.description}'),
               const SizedBox(height: 8),
-              Text('Trạng thái: ${_task.status.toString().split('.').last}'),
+              Text('Trạng thái: ${_getStatusDisplay(_task.status)}'),
               const SizedBox(height: 8),
               Text('Độ ưu tiên: ${_task.priority}'),
               const SizedBox(height: 8),
@@ -172,7 +185,7 @@ class _TaskDetailScreenState extends State<TaskDetailScreen> {
                 items: TaskStatus.values
                     .map((status) => DropdownMenuItem(
                   value: status,
-                  child: Text(status.toString().split('.').last),
+                  child: Text(_getStatusDisplay(status)),
                 ))
                     .toList(),
                 onChanged: (value) {
