@@ -96,7 +96,6 @@ class _TaskListScreenState extends State<TaskListScreen> {
     }
   }
 
-  // Hàm hiển thị trạng thái bằng tiếng Việt
   String _getStatusDisplay(TaskStatus status) {
     switch (status) {
       case TaskStatus.chuaLam:
@@ -144,6 +143,7 @@ class _TaskListScreenState extends State<TaskListScreen> {
             padding: const EdgeInsets.all(8.0),
             child: TextField(
               controller: _searchController,
+              style: TextStyle(color: Theme.of(context).textTheme.bodyMedium?.color),
               decoration: const InputDecoration(
                 labelText: 'Tìm kiếm công việc',
                 prefixIcon: Icon(Icons.search),
@@ -160,6 +160,7 @@ class _TaskListScreenState extends State<TaskListScreen> {
                     hint: const Text('Trạng thái'),
                     value: _selectedStatus,
                     isExpanded: true,
+                    style: TextStyle(color: Theme.of(context).textTheme.bodyMedium?.color),
                     items: [
                       const DropdownMenuItem(
                         value: null,
@@ -184,6 +185,7 @@ class _TaskListScreenState extends State<TaskListScreen> {
                     hint: const Text('Danh mục'),
                     value: _selectedCategory,
                     isExpanded: true,
+                    style: TextStyle(color: Theme.of(context).textTheme.bodyMedium?.color),
                     items: [
                       const DropdownMenuItem(
                         value: null,
@@ -211,7 +213,7 @@ class _TaskListScreenState extends State<TaskListScreen> {
           ),
           Expanded(
             child: _filteredTasks.isEmpty
-                ? const Center(child: Text('Không có công việc nào'))
+                ? Center(child: Text('Không có công việc nào', style: TextStyle(color: Theme.of(context).textTheme.bodyMedium?.color)))
                 : ListView.builder(
               itemCount: _filteredTasks.length,
               itemBuilder: (context, index) {

@@ -28,7 +28,6 @@ class TaskItem extends StatelessWidget {
     }
   }
 
-  // Hàm hiển thị trạng thái bằng tiếng Việt
   String _getStatusDisplay(TaskStatus status) {
     switch (status) {
       case TaskStatus.chuaLam:
@@ -63,12 +62,12 @@ class TaskItem extends StatelessWidget {
             fontSize: 16,
             fontWeight: FontWeight.w500,
             decoration: task.completed ? TextDecoration.lineThrough : null,
-            color: task.completed ? Colors.grey : Colors.black87,
+            color: task.completed ? Colors.grey : Theme.of(context).textTheme.bodyMedium?.color,
           ),
         ),
         subtitle: Text(
           'Trạng thái: ${_getStatusDisplay(task.status)}',
-          style: const TextStyle(color: Colors.black54),
+          style: TextStyle(color: Theme.of(context).textTheme.bodyMedium?.color?.withOpacity(0.7)),
         ),
         trailing: Row(
           mainAxisSize: MainAxisSize.min,
